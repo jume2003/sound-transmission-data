@@ -7,6 +7,7 @@
 #include "fftw3.h"
 #define PI 3.141592653589793
 
+
 double *MakeRange(double num1, double num2, double step)
 {
 	int data_len = int((num2 - num1) / step);
