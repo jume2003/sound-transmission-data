@@ -196,11 +196,24 @@ std::vector<int> MakeCrcData(std::vector<int> data_str)
 		int number = data_str[i];
 		crc_sum = crc_sum + number;
 		crc_mul = crc_mul ^ number;
+		datas.push_back(number);
 	}
 	crc_sum = crc_sum % 10;
 	crc_mul = crc_mul % 10;
 	datas.push_back(crc_sum);
 	datas.push_back(crc_mul);
+	return datas;
+}
+
+std::vector<int> MakeBackCrcData(std::vector<int> data_str)
+{
+	std::vector<int> datas;
+	for (int i = 0; i < data_str.size(); i++)
+	{
+		data_str[i] += data_str[data_str.size() - 1];
+		data_str[i] = data_str[i] % 10;
+	}
+	datas = MakeCrcData(data_str);
 	return datas;
 }
 	
@@ -236,7 +249,7 @@ void main()
 	WavReader wavreader;
 	std::vector<double> frequencys = { 1000, 1900, 2800, 3700, 4600, 5500, 6400, 7300, 8200, 9100, 5000 };
 	std::vector<double> sound_data;
-	wav_header_t wavinfo = wavreader.LoadWav("5.wav", sound_data);
+	wav_header_t wavinfo = wavreader.LoadWav("data.wav", sound_data);
 	std::vector<int> datas = DeCodeSound(sound_data, wavinfo.sampleRate, frequencys, 128);
 	std::vector<std::vector<int>> tdatas = DeCodeTransmissionData(datas, 15);
 	for (int i = 0; i < tdatas.size(); i++)
@@ -246,8 +259,19 @@ void main()
 		{
 			printf("%d", tdatas[i][j]);
 		}
+		printf("]");
+
+		auto bdatas = MakeBackCrcData(tdatas[i]);
+		printf("[");
+		for (int j = 0; j < bdatas.size(); j++)
+		{
+			printf("%d", bdatas[j]);
+		}
 		printf("]\n");
 	}
+	
+
+
 	printf("bbq");
 	while (true)Sleep(1000);
 }
